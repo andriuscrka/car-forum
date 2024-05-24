@@ -1,0 +1,20 @@
+.home-card__col {
+  background-color: whitesmoke;
+  width: 350px;
+}
+
+.home-preview__col {
+  background-color: whitesmoke;
+  width: 850px;
+  min-height: 80vh;
+}
+
+@media (max-width: 768px) {
+  .home-card__col {
+    max-width: 350px;
+  }
+
+  .home-preview__col {
+    max-width: 850px;
+  }
+}

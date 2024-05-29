@@ -1,13 +1,20 @@
 import { login } from '../store/slices/auth/authSlice';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 import { RootState } from '../store/store';
-import { Formik, Field, Form } from 'formik';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+
+import AuthLayout from '../layouts/AuthLayout';
+import { Label } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
   
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const initialValues = {
     username: '',
@@ -19,35 +26,51 @@ const Login = () => {
     password: Yup.string().required('Required'),
   });
 
-  const {status, error, user, loggedIn} = useSelector((state: RootState) => state.auth);
+  const {status, error, loggedIn} = useSelector((state: RootState) => state.auth);
 
-  const handleSubmit = (values: { username: string; password: string; }, {resetForm}) => {
-    //@ts-expect-error gaidys 
+  const handleSubmit = (values: { username: string; password: string; }, {resetForm, setStatus}) => {
+    setStatus(undefined);
+    //@ts-expect-error gaidys
     dispatch(login(values)).then((response: any) => {
-      if(response.payload && response.payload.userId) {
+
+      if(response.payload.success) {
         resetForm();
+      } else {
+        setStatus(response.payload.message);
       }
+
     });
   };
 
+  useEffect(() => {
+    if(loggedIn) {
+      navigate('/', {replace: true});
+    }
+  }, [loggedIn, navigate]);
+
   return (
-    <div>
-      <span>status: {status} </span>
-      <span>error: {error} </span>
-      <span>user: {user} </span>
-      <span>loggedIn: {loggedIn ? 'true' : 'false'} </span>
+    <AuthLayout>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values, { resetForm }) => handleSubmit(values, { resetForm })}
+        onSubmit={(values, { resetForm, setStatus }) => handleSubmit(values, { resetForm, setStatus })}
       >
-        <Form>
-          <Field name="username" type="text" />
-          <Field name="password" type="password" />
-          <button type="submit">Login</button>
-        </Form>
+        {({ status }) => (
+          <Form className='d-flex flex-column'>
+            <Label for="username">Username</Label>
+            <Field name="username" type="text" />
+            <ErrorMessage name="username" component="div" />
+
+            <Label for="password">Password</Label>
+            <Field name="password" type="password" />
+            <ErrorMessage name="password" component="div" />
+          
+            {error && <span>{status}</span>}
+            <Link to='/auth/registration' replace>Do not have an account? Register.</Link>
+            <button type="submit" className='mt-3'>Login</button>
+          </Form>)}
       </Formik>
-    </div>
+    </AuthLayout>
   );
 };
 

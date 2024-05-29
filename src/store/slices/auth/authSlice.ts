@@ -8,18 +8,36 @@ import Routes from '../../../constants/routes';
 const initialState = {
   token: localStorage.getItem('token') || null,
   loggedIn: !!localStorage.getItem('token'),
-  user: null,
+  user: localStorage.getItem('user') || null,
   status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
 
-export const login = createAsyncThunk('auth/login', async (data : unknown) => {
+export const login = createAsyncThunk('auth/login', async (data : unknown, thunkAPI) => {
   try {
     const response = await axios.post(Routes.User + '/login', data);
-
     return response.data;
   } catch(err) {
-    throw new Error(err.response.status);
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const register = createAsyncThunk('auth/register', async (data : unknown, thunkAPI) => {
+  try {
+    const response = await axios.post(Routes.User + '/register', data);
+    return response.data;
+  } catch(err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const getProfile = createAsyncThunk('auth/getProfile', async (userId: string, thunkAPI) => {
+  try {
+    const response = await axios.get(Routes.Profiles + `/${userId}`);
+    console.log(response);
+    return response.data;
+  } catch(err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
 });
 
@@ -31,6 +49,7 @@ export const authSlice = createSlice({
       state.loggedIn = false;
       state.status = 'idle';
       state.error = null;
+      state.user = null;
 
       localStorage.removeItem('user');
       localStorage.removeItem('token');
@@ -46,16 +65,39 @@ export const authSlice = createSlice({
         state.status = 'succeeded';
         state.loggedIn = true;
         state.error = null;
+        state.user = JSON.stringify(action.payload.data);
 
-        localStorage.setItem('user', action.payload.userId);
+        localStorage.setItem('user', JSON.stringify(action.payload.data));
         localStorage.setItem('token', 'jwt-placeholder' );
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
+      })
+      .addCase(register.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(register.fulfilled, (state) => {
+        state.status = 'succeeded';
+        state.error = null;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(getProfile.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.error = null;
+        //state.user = JSON.stringify(action.payload.data);
+      })
+      .addCase(getProfile.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
       });
-  }
-});
+  }});
 
 export const { logout } = authSlice.actions;
 

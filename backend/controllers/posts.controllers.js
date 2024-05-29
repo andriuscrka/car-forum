@@ -13,7 +13,7 @@ exports.getPost = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Post not found' });
     }
 
-    res.status(200).json({ success: true, post });
+    res.status(200).json({ success: true, data: post });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -24,14 +24,14 @@ exports.getPosts = async (req, res) => {
     const sort = req.query.sort || 'createdAt';
     const order = req.query.order === 'asc' ? 1 : -1;
     const userId = req.query.userId;
-
+    
     const posts = await Posts.find(userId ? {'user_id': userId} : {}).sort({ [sort]: order });
 
     if (!posts) {
       return res.status(404).json({ success: false, message: 'No posts found' });
     }
 
-    res.status(200).json({ success: true, posts });
+    res.status(200).json({ success: true, data: posts });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -66,7 +66,7 @@ exports.createPost = async (req, res) => {
 
     await session.commitTransaction();
 
-    res.status(201).json({success: true, message: 'Post uploaded successfully', post: createPost[0]});
+    res.status(201).json({success: true, message: 'Post uploaded successfully', data: createPost[0]});
   } catch (error) {
     await session.abortTransaction();
 
@@ -90,7 +90,7 @@ exports.editPost = async (req, res) => {
 
     await session.commitTransaction();
 
-    res.status(200).json({ success: true, message: 'Post updated successfully', post: editedPost });
+    res.status(200).json({ success: true, message: 'Post updated successfully', data: editedPost });
   } catch (error) {
 
     await session.abortTransaction();
@@ -116,7 +116,7 @@ exports.deletePost = async (req, res) => {
 
     await session.commitTransaction();
 
-    res.status(200).json({ success: true, message: 'Post deleted successfully', post });
+    res.status(200).json({ success: true, message: 'Post deleted successfully', data: post });
   } catch (error) {
     await session.abortTransaction();
     res.status(500).json({ success: false, message: error.message });
@@ -144,7 +144,7 @@ exports.toggleLike = async (req, res) => {
     }
 
     await post.save();
-    res.status(200).json({ success: true, message: `Like ${likeIndex === -1 ? 'added' : 'removed'} successfully`, post });
+    res.status(200).json({ success: true, message: `Like ${likeIndex === -1 ? 'added' : 'removed'} successfully`, data: post });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

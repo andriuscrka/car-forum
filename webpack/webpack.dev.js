@@ -3,6 +3,9 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 
 module.exports = {
   mode: 'development',
+  output: {
+    publicPath: '/',
+  },
   devServer: {
     historyApiFallback: true,
     hot: true,

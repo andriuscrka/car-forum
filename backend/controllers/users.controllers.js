@@ -8,15 +8,13 @@ exports.login = async (req, res) => {
     const {username, password} = req.body;
     const user = await Users.findOne({username});
 
-    if(!user) {
+    if(!user || user.password !== password) {
       return res.status(404).json({success: false, message: 'Username or password is incorrect'});
     }
-
-    if(user.password !== password) {
-      return res.status(404).json({success: false, message: 'Username or password is incorrect'});
-    }
-
-    res.status(200).json({success: true, message: 'Login successful', userId: user._id});
+    
+    const { password: _, ...userWithoutPassword } = user.toObject();
+        
+    res.status(200).json({success: true, message: 'Login successful', data: userWithoutPassword});
   } catch (error) {
     res.status(500).json({success: false, message: error.message});
   }
@@ -41,7 +39,7 @@ exports.register = async (req, res) => {
 
     await session.commitTransaction();
 
-    res.status(201).json({success: true, message: 'Registration successful'});
+    res.status(201).json({success: true, message: 'Registration successful', data: createAccount[0]._id});
   } catch (error) {
     await session.abortTransaction();
 
@@ -90,7 +88,7 @@ exports.getUsers = async (req, res) => {
     const order = req.query.order === 'asc' ? 1 : -1;
 
     const users = await Users.find().sort({ [sort]: order });
-    res.status(200).json({ success: true, users });
+    res.status(200).json({ success: true, data: users });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -104,7 +102,7 @@ exports.getUser = async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    res.status(200).json({ success: true, user });
+    res.status(200).json({ success: true, data: user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

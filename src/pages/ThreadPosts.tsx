@@ -9,27 +9,35 @@ import PostPreview from '../components/PostPreview';
 
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPostPreviews } from './../store/slices/posts/postsSlice';
+import { useParams } from 'react-router-dom';
+import { getPostPreviewsByThread } from './../store/slices/posts/postsSlice';
 import { RootState } from '../store/store';
+
+import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
 
-import {useNavigate} from 'react-router-dom';
+const ThreadPosts = () => {
 
-const Home = () => {
+  const [postPreviews, setPostPreviews] = useState([]);
+  const [threadTitle, setThreadTitle] = useState('');
 
+  const {threadId} = useParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    //document.title = 'Auto Forum | Home';
     //@ts-expect-error sudu kruva
-    dispatch(getPostPreviews());
+    dispatch(getPostPreviewsByThread(threadId)).then((response) => {
+      if(response.payload.success){
+        console.log(response.payload.data);
+        setPostPreviews(response.payload.data.previews);
+        setThreadTitle(response.payload.data.thread_title);
+      }
+    });
 
   }, []);
 
-  const status = useSelector((state: RootState) => state.posts.status);
-  const postPreviews = useSelector((state: RootState) => state.posts.postPreviews);
+  const {status, error} = useSelector((state: RootState) => state.posts);
   const {loggedIn} = useSelector((state: RootState) => state.auth);
 
   return (
@@ -65,10 +73,7 @@ const Home = () => {
             </Card>
           </div>
           <div className='d-flex flex-column ms-5'>
-            <div className='d-flex justify-content-between'>
-              <h1 style={{fontSize: '30px', fontWeight: 'bold'}}>All posts</h1>
-              {loggedIn && <Button onClick={() => navigate('/posts/create-post')}>Create post</Button>}
-            </div>
+            <h1 style={{fontSize: '30px', fontWeight: 'bold'}}>Posts in {threadTitle}</h1>
             <div className='mt-3 home-preview__col'>
               {postPreviews.length === 0 && status === 'loading' ? <PostPreviewPlaceholder/> : null}
               {postPreviews && status === 'succeeded' && postPreviews.map((preview: any) => {
@@ -86,4 +91,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default ThreadPosts;

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const commentSchema = require('./comment.model');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const userCommentsSchema = new mongoose.Schema({
@@ -12,7 +13,7 @@ const userCommentsSchema = new mongoose.Schema({
     required: [true, 'Author name is required'],
   },
   comments: {
-    type: Array,
+    type: [commentSchema],
     default: [],
   },
 },  {timestamps: true});

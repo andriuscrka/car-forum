@@ -1,21 +1,20 @@
-import Home from './pages/Home';
-import Login from './pages/Login';
+import { Home, Login, Registration, Threads, Post, Profile, ThreadPosts, CreatePost, NotFound } from './pages';
 
-import { logout } from './store/slices/auth/authSlice';
-import { useDispatch } from 'react-redux';
-
-import { Routes, Route, Link} from 'react-router-dom';
-
+import { Routes, Route} from 'react-router-dom';
 
 export const App = () => {
-  
-  const dispatch = useDispatch();
-
   return (
     <>
       <Routes>
         <Route path={'/'} element={<Home />}/>
-        <Route path={'/login'} element={<Login />}/>
+        <Route path={'/auth/login'} element={<Login />}/>
+        <Route path={'/auth/registration'} element={<Registration />}/>
+        <Route path={'/posts/:threadId/:postId?'} element={<Post />}/>
+        <Route path={'/posts/create-post'} element={<CreatePost />} />
+        <Route path={'/users/:userId'} element={<Profile />}/>
+        <Route path={'/threads/'} element={<Threads />}/>
+        <Route path={'/threads/:threadId'} element={<ThreadPosts />}/>
+        <Route path={'*'} element={<NotFound />}/>
       </Routes>
     </>
   );

@@ -8,11 +8,10 @@ require('dotenv').config();
 const app = express();
 
 const DB_URI = process.env.DB_URI;
+const SERVER_URL = process.env.SERVER_URL;
 const PORT = process.env.PORT;
 
-app.use(cors({
-  origin: DB_URI
-}));
+app.use(cors());
 
 const userRoutes = require('./routes/users.routes'); 
 const profileRoutes = require('./routes/profiles.routes');
@@ -31,9 +30,9 @@ app.use('/api/posts', postRoutes);
 app.use('/api/post-previews', postPreviewRoutes);
 app.use('/api/comments', commentsRoutes);
 
-// app.get('/*', function (req, res) {
-//   res.sendFile(path.join(__dirname, '../build', 'index.html'));
-// });
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
+});
 
 mongoose.connect(DB_URI).then(() => {
   console.log('Connected to database');

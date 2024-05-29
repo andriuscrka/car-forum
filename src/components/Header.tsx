@@ -1,12 +1,25 @@
 import { Navbar, Container, Nav, NavbarBrand, Form, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../store/slices/auth/authSlice';
+
+import { RootState } from '../store/store';
 
 import '../scss/header.scss';
 
 const Header = () => {
+
+  const dispatch = useDispatch();
+  const {loggedIn} = useSelector((state: RootState) => state.auth);
+  const {_id} = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : { _id: null};
+
   return (
-    <Navbar bg="primary" data-bs-theme="dark">
+    <Navbar bg="primary" data-bs-theme="dark" className='p-2 d-flex justify-content-center'>
       <Container >
-        <NavbarBrand href="home">Auto Forum</NavbarBrand>
+        <Link to='/' className='me-3'>
+          <NavbarBrand>Auto Forum</NavbarBrand>
+        </Link>
         <Form className="d-flex w-50">
           <Form.Control
             type="search"
@@ -17,10 +30,22 @@ const Header = () => {
           <Button variant="primary">Search</Button>
         </Form>
         <Nav>
-          <Nav.Link>Login</Nav.Link>
-          <Nav.Link>
+          {
+            loggedIn && 
+            <>
+              <Link to={`/users/${_id}`} className='me-3'>Profile</Link>
+              <Button onClick={() => dispatch(logout())}>Logout</Button>
+            </>
+          }
+          {
+            !loggedIn && 
+        <>
+          <Link to='/auth/login' className='me-3'>Login</Link>
+          <Link to='/auth/registration'>
               Register
-          </Nav.Link>
+          </Link>
+        </>
+          }
         </Nav>
       </Container>
     </Navbar>

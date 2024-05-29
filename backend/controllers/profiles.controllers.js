@@ -15,7 +15,7 @@ exports.getProfile = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Profile not found' });
     }
 
-    res.status(200).json({ success: true, profile });
+    res.status(200).json({ success: true, data: profile });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -76,7 +76,7 @@ exports.editProfile = async (req, res) => {
 
     await session.commitTransaction();
 
-    res.status(200).json({ success: true, profile });
+    res.status(200).json({ success: true, data: profile });
   } catch (error) {
     await session.abortTransaction();
 

@@ -1,0 +1,46 @@
+.post-preview {
+  background-color: whitesmoke;
+  width: 100%;
+  height: 80px;
+  border: 1px solid black;
+
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.image {
+  width: 70px;
+  height: 70px;
+  border: 1px solid black;
+  margin-inline: 5px;
+}
+
+.text-container {
+  line-height: 0px;
+  margin-left: 10px;
+}
+
+.text-container > * {
+  margin: 0;
+}
+
+.thread {
+  font: 14px sans-serif;
+  color: lightskyblue;
+}
+
+.thread:hover {
+  text-decoration: underline;
+}
+
+.title {
+  font: 24px sans-serif;
+  font-weight: 500;
+  margin-block: 4px;
+}
+
+.information {
+  font: 14px sans-serif;
+  color: gray
+}

@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.get('/', postPreviewsController.getPostPreviews);
 router.get('/:postId', postPreviewsController.getPostPreview);
+router.get('/thread/:threadId', postPreviewsController.getPostPreviewsByThread);
 
 module.exports = router;

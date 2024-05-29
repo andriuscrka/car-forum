@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
-const MIN_AGE = 14;
+const MIN_AGE = 16;
 
 const birthdayValidator =function(birthday) {
   if (Object.prototype.toString.call(birthday) === '[object Date]') {
@@ -31,11 +31,11 @@ const profileSchema = new mongoose.Schema({
   name: {
     type: String,
     minlength: [2, 'Name must be at least 2 characters'],
-    default: undefined,
+    default: '',
   },
   description: {
     type: String,
-    default: undefined,
+    default: '',
   },
   birthday: {
     type: Date,

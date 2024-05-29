@@ -1,0 +1,30 @@
+.author-container {
+  display: flex;
+
+  width: 1000px;
+  min-height: 40px;
+
+  align-items: center;
+  background-color: whitesmoke;
+}
+
+.author_image {
+  width: 30px;
+  height: 30px;
+  margin-inline: 5px;
+  background-color: lightgray;
+}
+
+.post-container {
+  width: 1000px;
+  background-color: whitesmoke;
+
+  padding: 10px;
+}
+
+.comments {
+  width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

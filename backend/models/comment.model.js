@@ -10,8 +10,16 @@ const commentSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
-},  {timestamps: true, _id: true});
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+},  {_id: true});
 
 commentSchema.plugin(uniqueValidator, { message: '"{VALUE}" is already in use.' });
 
-module.exports = new mongoose.model('comment', commentSchema);
+module.exports = commentSchema;

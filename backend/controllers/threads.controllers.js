@@ -9,10 +9,10 @@ exports.getThread = async (req, res) => {
     const thread = await Threads.findById(req.params.threadId);
 
     if (!thread) {
-      return res.status(404).json({ success: false, message: 'Profile not found' });
+      return res.status(404).json({ success: false, message: 'Thread not found' });
     }
 
-    res.status(200).json({ success: true, thread });
+    res.status(200).json({ success: true, data: thread });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -24,7 +24,7 @@ exports.getThreads = async (req, res) => {
     const order = req.query.order === 'asc' ? 1 : -1;
 
     const threads = await Threads.find().sort({ [sort]: order });
-    res.status(200).json({ success: true, threads });
+    res.status(200).json({ success: true, data: threads });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -38,7 +38,7 @@ exports.createThread = async (req, res) => {
 
     await thread.save();
 
-    res.status(201).json({ success: true, thread });
+    res.status(201).json({ success: true, data: thread });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -78,7 +78,7 @@ exports.editThread = async (req, res) => {
 
     await session.commitTransaction();
 
-    res.status(200).json({ success: true, thread });
+    res.status(200).json({ success: true, data: thread });
   } catch (error) {
     await session.abortTransaction();
 

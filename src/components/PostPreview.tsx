@@ -35,7 +35,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({data}) => {
           <h2 className='title'>{title || 'untitled'}</h2>
           <span className='information'>By: </span>
           <span className='information'>{author_name || 'noname'}</span>
-          <span className='information'> | {getTimeAgo(createdAt)} | Last activity: {getTimeAgo(updatedAt)} | Comments: </span>
+          <span className='information'> | {getTimeAgo(createdAt)} | Last activity: {getTimeAgo(updatedAt)}</span>
         </div>
       </div>
     </Link>

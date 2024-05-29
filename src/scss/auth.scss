@@ -1,0 +1,57 @@
+.auth-container {
+  display: flex;
+  flex-direction: column;
+
+  background-color: rgb(202, 220, 248);
+  padding: 30px;
+  width: 500px;
+}
+
+.auth-title {
+  font-size: 30px;
+  margin-bottom: 20px;
+  align-self: center;
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+}
+
+.auth-input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+
+  background-color: white;
+
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.auth-container > select {
+  cursor: pointer;
+}
+
+.auth-container > textarea {
+  resize: none;
+  font-size: 16px;
+}
+
+.auth-input__label {
+  margin-bottom: 2px;
+}
+
+.auth-error {
+  color: red;
+  font-size: 16px;
+  align-self: center;
+}
+
+.auth-input__error {
+  color: red;
+  font-size: 14px;
+  margin-top: -5px;
+  margin-bottom: 5px;
+}
+
+.auth-link {
+  align-self: center;
+}

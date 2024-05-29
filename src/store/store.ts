@@ -10,7 +10,6 @@ export const store = configureStore({
     posts: postsSlice,
     comments: commentsSlice,
   },
-  //window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 });
 
 export type RootState = {

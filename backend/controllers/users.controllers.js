@@ -88,6 +88,7 @@ exports.getUsers = async (req, res) => {
     const order = req.query.order === 'asc' ? 1 : -1;
 
     const users = await Users.find().sort({ [sort]: order });
+    
     res.status(200).json({ success: true, data: users });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

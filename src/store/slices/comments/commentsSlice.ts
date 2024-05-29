@@ -1,6 +1,6 @@
 'use strict';
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, isPending, isFulfilled, isRejected } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import Routes from '../../../constants/routes';
@@ -34,31 +34,28 @@ export const commentsSlice = createSlice({
   initialState,
   reducers: {
   },
-  extraReducers(builder) {
+  extraReducers: (builder) => {
     builder
-      .addCase(getComments.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(getComments.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.error = null;
-        state.comments = action.payload.data;
-      })
-      .addCase(getComments.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      })
-      .addCase(addComment.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(addComment.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.error = null;
-      })
-      .addCase(addComment.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      });
+      .addMatcher(
+        isPending,
+        (state) => {
+          state.status = 'loading';
+        }
+      )
+      .addMatcher(
+        isFulfilled,
+        (state, action) => {
+          state.status = 'succeeded';
+          state.error = null;
+        }
+      )
+      .addMatcher(
+        isRejected,
+        (state, action) => {
+          state.status = 'failed';
+          state.error = action.error.message;
+        }
+      );
   }
 });
 

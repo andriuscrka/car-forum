@@ -1,24 +1,21 @@
-import { Navbar, Container, Nav, NavbarBrand, Form, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../store/slices/auth/authSlice';
-
-import { RootState } from '../store/store';
-
 import '../scss/header.scss';
+
+import { Navbar, Container, Nav, NavbarBrand, Form, Button } from 'react-bootstrap';
+import { Link, } from 'react-router-dom';
+
+import { logout } from '../store/slices/auth/authSlice';
+import { useAppContext } from '../App';
 
 const Header = () => {
 
-  const dispatch = useDispatch();
-  const {loggedIn} = useSelector((state: RootState) => state.auth);
-  const {_id} = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : { _id: null};
+  const {dispatch, navigate, loggedIn, user} = useAppContext();
+  const {_id} = user || '';
 
   return (
     <Navbar bg="primary" data-bs-theme="dark" className='p-2 d-flex justify-content-center'>
       <Container >
         <Link to='/' className='me-3'>
-          <NavbarBrand>Auto Forum</NavbarBrand>
+          <NavbarBrand style={{fontWeight: 'bold'}}>Auto Forum</NavbarBrand>
         </Link>
         <Form className="d-flex w-50">
           <Form.Control
@@ -33,17 +30,15 @@ const Header = () => {
           {
             loggedIn && 
             <>
-              <Link to={`/users/${_id}`} className='me-3'>Profile</Link>
+              <Button onClick={() => navigate(`/users/${_id}`)}>Profile</Button>
               <Button onClick={() => dispatch(logout())}>Logout</Button>
             </>
           }
           {
             !loggedIn && 
         <>
-          <Link to='/auth/login' className='me-3'>Login</Link>
-          <Link to='/auth/registration'>
-              Register
-          </Link>
+          <Button onClick={() => navigate('/auth/login')}>Login</Button>
+          <Button onClick={() => navigate('/auth/registration')}>Register</Button>
         </>
           }
         </Nav>

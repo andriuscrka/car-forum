@@ -27,10 +27,6 @@ exports.getPosts = async (req, res) => {
     
     const posts = await Posts.find(userId ? {'user_id': userId} : {}).sort({ [sort]: order });
 
-    if (!posts) {
-      return res.status(404).json({ success: false, message: 'No posts found' });
-    }
-
     res.status(200).json({ success: true, data: posts });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

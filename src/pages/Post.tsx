@@ -1,66 +1,27 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import {Field, Form, Formik} from 'formik';
-import * as Yup from 'yup';
-
 import '../scss/post.scss';
 
-import { getTimeAgo } from '../utils';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 import MainLayout from '../layouts/MainLayout';
 import { getPost } from '../store/slices/posts/postsSlice';
-import { getComments, addComment } from '../store/slices/comments/commentsSlice';
+import Comments from '../components/Comments';
+import { useAppContext } from '../App';
 
 const Post = () => {
-  const [allComments, setAllComments] = useState([]);
-  const { postId, threadId } = useParams();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    //@ts-expect-error sudu kruva
-    dispatch(getPost(postId));
-    //@ts-expect-error sudu kruva
-    dispatch(getComments(postId));
-  }, []);
-
-  const {post, status, error: postError} = useSelector((state: any) => state.posts);
-  const {comments, error: commentsError} = useSelector((state: any) => state.comments);
-
+  const [post, setPost] = useState({});
+  const {postId } = useParams();
+  const {dispatch} = useAppContext();
   const {user_id, author_name} = post;
-  const {_id, name} = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : { _id: null, name: null };
-
-  const {loggedIn} = useSelector((state: any) => state.auth);
-
+  
   useEffect(() => {
-    console.log(comments);
-    const initComments = (comments.users || [])
-      .flatMap(user => user.comments.map(comment => ({...comment, author_name: user.author_name, author_id: user.user_id})));
-      
-    console.log(initComments);
-    const sortedComments = initComments.sort((a, b) => (new Date(b.createdAt) as any) - (new Date(a.createdAt) as any));
-
-    setAllComments(sortedComments);
-  }, [comments]);
-
-  const initialValues = {
-    comment: '',
-  };
-
-  const validationSchema = Yup.object({
-    comment: Yup.string().required('Required').max(2000, 'Must be at most 2000 characters')
-  });
-
-  const handleAddComment = (values: {comment: string}, {resetForm}: any) => {
-    //@ts-expect-error fuck off
-    dispatch(addComment({postId, data: {text: values.comment, user_id: _id, author_name: name}})).then((response: any) => {
-      console.log(response);
+    dispatch(getPost(postId)).then((response) => {
       if(response.payload.success){
-        resetForm();
-        setAllComments([{...response.payload.data, author_name: name, author_id: _id }, ...allComments]);
+        setPost(response.payload.data);
       }
     });
-  };
+  }, []);
 
   return (
     <MainLayout>
@@ -72,33 +33,12 @@ const Post = () => {
           </Link>
         </div>
         <div className='post-container'>
-          <h1 className='' style={{fontWeight: 'bold'}}>{post.title}</h1>
-          <p className='text'>{post.text}</p>
+          <div>
+            <h1 className='post-title'>{post.title}</h1>
+            <p className='post-text'>{post.text}</p>
+          </div>
         </div>
-        {loggedIn && <div className='d-flex flex-column'>
-          <Formik 
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={(values, { resetForm }) => handleAddComment(values, { resetForm })}>
-            <Form >
-              <Field name='comment' type='text' placeholder='Write a reply...' style={{width: '600px'}} />
-              <button type='submit'>Reply</button>
-            </Form>
-          </Formik>
-        </div>}
-        <span>Replies</span>
-        <div>
-          {allComments.map((comment: any) => {
-            const {_id, author_name, author_id, text, createdAt} = comment;
-            return (<div key={_id} style={{width: '1000px', marginBlock: '10px'}}>
-              <Link to={`/users/${author_id}`} style={{width: 'fit-content', display: 'inline-block'}}>
-                <h3 style={{fontWeight: 'bold'}}>{author_name}</h3>
-              </Link>
-              <p>{text}</p>
-              <span style={{fontStyle: 'italic'}}>{getTimeAgo(createdAt)}</span>
-            </div>);
-          })}
-        </div>
+        <Comments />
       </div>
     </MainLayout> 
   );

@@ -1,12 +1,12 @@
 'use strict';
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk, isPending, isFulfilled, isRejected } from '@reduxjs/toolkit';
 
+import axios from 'axios';
 import Routes from '../../../constants/routes';
 
 const initialState = {
-  status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: 'idle',
   error: null,
   post: {},
   posts: [],
@@ -22,20 +22,20 @@ export const addPost = createAsyncThunk('posts/addPost', async (post: any, thunk
   }
 });
 
-export const getPostPreviews = createAsyncThunk('posts/getPostPreviews', async (thunkAPI) => {
-  try {
-    const response = await axios.get(Routes.PostPreviews);
-    return response.data;
-  } catch(err) {
-    return thunkAPI.rejectWithValue(err.response.data);
-  }
-});
-
 export const getPostPreviewsByThread = createAsyncThunk('posts/getPostPreviewsByThread', async (threadId: string, thunkAPI) => {
   try {
     const response = await axios.get(Routes.PostPreviews + `/thread/${threadId}`);
     return response.data;
   } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
+
+export const getPostPreviews = createAsyncThunk('posts/getPostPreviews', async (thunkAPI) => {
+  try {
+    const response = await axios.get(Routes.PostPreviews);
+    return response.data;
+  } catch(err) {
     return thunkAPI.rejectWithValue(err.response.data);
   }
 });
@@ -63,43 +63,28 @@ export const postsSlice = createSlice({
   initialState,
   reducers: {
   },
-  extraReducers(builder) {
+  extraReducers: (builder) => {
     builder
-      .addCase(getPostPreviews.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(getPostPreviews.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.error = null;
-        state.postPreviews = action.payload.data;
-      })
-      .addCase(getPostPreviews.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      })
-      .addCase(getPost.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(getPost.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.error = null;
-        state.post = action.payload.data;
-      })
-      .addCase(getPost.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      })
-      .addCase(getPostPreviewsByThread.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(getPostPreviewsByThread.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.error = null;
-      })
-      .addCase(getPostPreviewsByThread.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      });
+      .addMatcher(
+        isPending,
+        (state) => {
+          state.status = 'loading';
+        }
+      )
+      .addMatcher(
+        isFulfilled,
+        (state, action) => {
+          state.status = 'succeeded';
+          state.error = null;
+        }
+      )
+      .addMatcher(
+        isRejected,
+        (state, action) => {
+          state.status = 'failed';
+          state.error = action.error.message;
+        }
+      );
   }
 });
 

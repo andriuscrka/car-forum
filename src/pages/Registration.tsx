@@ -1,23 +1,20 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import '../scss/auth.scss';
 
 import { useEffect } from 'react';
-
-import { RootState } from '../store/store';
+import { Label } from 'reactstrap';
+import { Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import * as Yup from 'yup';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 
 import AuthLayout from '../layouts/AuthLayout';
-
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import { Label } from 'reactstrap';
-import * as Yup from 'yup';
-
 import { register } from '../store/slices/auth/authSlice';
+import { useAppContext } from '../App';
 
 const Registration = () => {
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const {loggedIn, error} = useSelector((state: RootState) => state.auth);
+  const {dispatch, navigate, loggedIn, authState} = useAppContext();
+  const {error} = authState;
 
   const date = new Date();
   date.setFullYear(date.getFullYear() - 16);
@@ -41,11 +38,8 @@ const Registration = () => {
   });
 
   const handleSubmit = (values: { username: string; password: string; }, {resetForm, setStatus}) => {
-    console.log('handlesubmit');
     setStatus(undefined);
-    //@ts-expect-error gaidys 
     dispatch(register(values)).then((response: any) => {
-      console.log(response);
       if(response.payload.success) {
         resetForm();
         navigate('/auth/login', {replace: true});
@@ -70,35 +64,29 @@ const Registration = () => {
         validateOnChange={false}
       >
         {({ status }) => (
-          <Form className='d-flex flex-column'>
-
-            <Label for="name">Name</Label>
-            <Field name="name" type="text" />
-            <ErrorMessage name="name" component="div" />
-
-            <Label for="username">Username</Label>
-            <Field name="username" type="text" />
-            <ErrorMessage name="username" component="div" />
-
-            <Label for="email">Email</Label>
-            <Field name="email" type="email" />
-            <ErrorMessage name="email" component="div" />
-
-            <Label for="password">Password</Label>
-            <Field name="password" type="password" />
-            <ErrorMessage name="password" component="div" />
-
-            <Label for="repeatPassword">Repeat Password</Label>
-            <Field name="repeatPassword" type="password" />
-            <ErrorMessage name="repeatPassword" component="div" />
-
+          <Form className='auth-container'>
+            <h2 className='auth-title'>Auto Forum | Registration</h2>
+            <Label  className='auth-input__label' for="name">Name</Label>
+            <Field className='auth-input' name="name" type="text" />
+            <ErrorMessage className='auth-input__error' name="name" component="div" />
+            <Label  className='auth-input__label' for="username">Username</Label>
+            <Field className='auth-input' name="username" type="text" />
+            <ErrorMessage className='auth-input__error' name="username" component="div" />
+            <Label className='auth-input__label' for="email">Email</Label>
+            <Field className='auth-input' name="email" type="email" />
+            <ErrorMessage className='auth-input__error' name="email" component="div" />
+            <Label className='auth-input__label' for="password">Password</Label>
+            <Field className='auth-input' name="password" type="password" />
+            <ErrorMessage className='auth-input__error' name="password" component="div" />
+            <Label className='auth-input__label' for="repeatPassword">Repeat Password</Label>
+            <Field className='auth-input' name="repeatPassword" type="password" />
+            <ErrorMessage className='auth-input__error' name="repeatPassword" component="div" />
             <Label for="birthday">Birthday</Label>
-            <Field name="birthday" type="date" />
-            <ErrorMessage name="birthday" component="div" />
-
-            {error && <span>{status}</span>}
-            <Link to='/auth/login' replace>Already have an account? Login.</Link>
-            <button type="submit" className='mt-3'>Register</button>
+            <Field className='auth-input' name="birthday" type="date" />
+            <ErrorMessage className='auth-input__error' name="birthday" component="div" />
+            {error && <span className='auth-error'>{status}</span>}
+            <Link className='auth-link' to='/auth/login' replace>Already have an account? Login.</Link>
+            <Button  type="submit" className='mt-3'>Register</Button>
           </Form>
         )}
       </Formik>

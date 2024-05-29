@@ -5,7 +5,7 @@ const MainLayout = ({children}) => {
   return (
     <>  
       <Header />
-      <div style={{minHeight: '100vh'}}> 
+      <div className='mt-5 mb-5' style={{minHeight: '90vh'}}> 
         {children}
       </div>
       <Footer />

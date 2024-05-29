@@ -126,11 +126,7 @@ exports.getComments = async (req, res) => {
     const postId = req.params.postId;
     const comments = await Comments.findOne({'post_id': postId});
 
-    if (!comments) {
-      return res.status(404).json({success: false, message: 'Comments not found'});
-    }
-
-    res.status(200).json({success: true, data: comments});
+    res.status(200).json({success: true, data: comments || []});
 
   } catch (error) {
     res.status(500).json({success: false, message: error.message});

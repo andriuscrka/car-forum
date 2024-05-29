@@ -1,6 +1,6 @@
 'use strict';
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, isPending, isFulfilled, isRejected } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import Routes from '../../../constants/routes';
@@ -70,33 +70,26 @@ export const authSlice = createSlice({
         localStorage.setItem('user', JSON.stringify(action.payload.data));
         localStorage.setItem('token', 'jwt-placeholder' );
       })
-      .addCase(login.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      })
-      .addCase(register.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(register.fulfilled, (state) => {
-        state.status = 'succeeded';
-        state.error = null;
-      })
-      .addCase(register.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      })
-      .addCase(getProfile.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(getProfile.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.error = null;
-        //state.user = JSON.stringify(action.payload.data);
-      })
-      .addCase(getProfile.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      });
+      .addMatcher(
+        isPending,
+        (state) => {
+          state.status = 'loading';
+        }
+      )
+      .addMatcher(
+        isFulfilled,
+        (state, action) => {
+          state.status = 'succeeded';
+          state.error = null;
+        }
+      )
+      .addMatcher(
+        isRejected,
+        (state, action) => {
+          state.status = 'failed';
+          state.error = action.error.message;
+        }
+      );
   }});
 
 export const { logout } = authSlice.actions;

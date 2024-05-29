@@ -1,39 +1,31 @@
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
 import { getThreads } from '../store/slices/posts/postsSlice';
 import MainLayout from '../layouts/MainLayout';
-
-import { Link } from 'react-router-dom';
+import ThreadPreview from '../components/ThreadPreview';
+import { useAppContext } from '../App';
 
 const Threads = () => {
 
-  const dispatch = useDispatch();
-
   const [threads, setThreads] = useState([]);
+  const {dispatch, postsState} = useAppContext();
 
   useEffect(() => {
-    //@ts-expect-error eik nachui erroras
     dispatch(getThreads()).then((response) => {
       if(response.payload.success){
         setThreads(response.payload.data);
       }
     });
-  }, []);
-
-  console.log(threads);
+  }, [dispatch]);
 
   return (
     <MainLayout>
-      <div className='w-100 mt-5 mb-3 d-flex justify-content-center' style={{}}>
-        <div style={{width: '1000px', minHeight: '500px', backgroundColor: 'whitesmoke'}}>
+      <div className='w-100 mt-5 mb-3 d-flex flex-column align-items-center'>
+        <div style={{width: '1000px'}} className='mb-3'>
+          <h1 style={{fontSize: '30px', fontWeight: 'bold'}}>All threads</h1>
+        </div>
+        <div  style={{width: '1000px', minHeight: '500px', backgroundColor: 'whitesmoke'}}>
           {threads.map((thread: any) => (
-            <Link to={`/threads/${thread._id}`} key={thread._id}>
-              <div style={{border: '1px solid black', padding: '10px', margin: '10px'}}>
-                <h3>{thread.title}</h3>
-                <p>{thread.description}</p>
-              </div>
-            </Link>
+            <ThreadPreview key={thread._id} data={thread}/>
           ))}
         </div>
       </div>

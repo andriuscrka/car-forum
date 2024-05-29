@@ -16,7 +16,7 @@ const root = createRoot(container);
 
 root.render(
   <StrictMode>
-    <Provider store={store}>
+    <Provider store={store}>      
       <BrowserRouter>
         <App />
       </BrowserRouter>

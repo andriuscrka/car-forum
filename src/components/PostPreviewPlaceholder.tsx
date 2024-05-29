@@ -1,5 +1,3 @@
-import '../scss/_shared.scss';
-
 const PostPreviewPlaceholder = () => {
   return (
     <div className='h-100 w-100 d-flex justify-content-center align-items-center'>

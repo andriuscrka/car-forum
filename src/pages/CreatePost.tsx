@@ -1,19 +1,29 @@
-import MainLayout from '../layouts/MainLayout';
-
-import { Label } from 'reactstrap';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
+import '../scss/auth.scss';
 
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Label } from 'reactstrap';
+import { Button } from 'react-bootstrap';
+import * as Yup from 'yup';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 
+import MainLayout from '../layouts/MainLayout';
 import { addPost } from '../store/slices/posts/postsSlice';
-
 import { getThreads } from '../store/slices/posts/postsSlice';
-
-import { useNavigate   } from 'react-router-dom';
+import { useAppContext } from '../App';
 
 const CreatePost = () => {
+
+  const [threads, setThreads] = useState([]);
+  const {dispatch, navigate, loggedIn, user, postsState} = useAppContext();
+  const {error} = postsState;
+  const {_id, name} = user;
+
+  useEffect(() => {
+    if(!loggedIn) {
+      navigate('/', {replace: true});
+    }
+  }, [loggedIn, navigate]);
+
   const initialValues = {
     title: '',
     thread: '',
@@ -26,16 +36,9 @@ const CreatePost = () => {
     text: Yup.string().required('Required').min(20, 'Must be at least 20 characters').max(2000, 'Must be at most 2000 characters'),
   });       
 
-  const {_id, name} = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : { _id: null, name: null };
-  
-  const [threads, setThreads] = useState([]);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  
+
   const handleSubmit = (values: any, { resetForm, setStatus }: any) => {
-
     const thread = JSON.parse(values.thread);
-
     const post = {
       title: values.title,
       text: values.text,
@@ -45,7 +48,6 @@ const CreatePost = () => {
       thread_name: thread.name
     };
 
-    //@ts-expect-error sudu kruva
     dispatch(addPost(post)).then((response) => {
       if(response.payload.success){
         resetForm();
@@ -56,53 +58,45 @@ const CreatePost = () => {
     });
   };
 
-  
   useEffect(() => {
-    //@ts-expect-error aik nachui
     dispatch(getThreads()).then((response) => {
       if(response.payload.success){
         setThreads(response.payload.data);
       }
     });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <MainLayout> 
-      <div className='d-flex justify-content-center mt-5'>
-        <div style={{width: '1000px', minHeight: '500px', backgroundColor: 'whitesmoke'}}>
-          <h1>Create Post</h1>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={(values, { resetForm, setStatus }) => handleSubmit(values, { resetForm, setStatus })}
-            validateOnChange={false}
-          >
-            {({ status }) => (
-              <Form className='d-flex flex-column'>
-
-                <Label for="title">Title</Label>
-                <Field name="title" type="text" />
-                <ErrorMessage name="title" component="div" />
-
-                <Label for="thread">Thread</Label>
-                <Field as="select" name="thread">
-                  <option value="">Select a thread</option>
-                  {threads.map((thread: any) => (
-                    <option key={thread._id} value={JSON.stringify({id: thread._id, title: thread.title})}>{thread.title}</option>
-                  ))}
-                </Field>
-                <ErrorMessage name="thread" component="div" />
-
-                <Label for="text">Text</Label>
-                <Field name="text" as="textarea" style={{height: '150px'}} />
-                <ErrorMessage name="text" component="div" />
-
-                <button type="submit" className='mt-3'>Post</button>
-                
-              </Form>
-            )}
-          </Formik>
-        </div>
+    <MainLayout>
+      <div className='d-flex h-100 align-items-center justify-content-center'>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values, { resetForm, setStatus }) => handleSubmit(values, { resetForm, setStatus })}
+          validateOnChange={true}
+        >
+          {({ status }) => (
+            <Form className='auth-container'>
+              <h1 className='auth-title'>Create Post</h1>
+              <Label className='auth-input__label' for="title">Title</Label>
+              <Field className='auth-input' name="title" type="text" />
+              <ErrorMessage className='auth-input__error' name="title" component="div" />
+              <Label className='auth-input__label'  for="thread">Thread</Label>
+              <Field className='auth-input' as="select" name="thread">
+                <option value="">Select a thread</option>
+                {threads.map((thread: any) => (
+                  <option key={thread._id} value={JSON.stringify({id: thread._id, title: thread.title})}>{thread.title}</option>
+                ))}
+              </Field>
+              <ErrorMessage className='auth-input__error' name="thread" component="div" />
+              <Label className='auth-input__label'  for="text">Text</Label>
+              <Field className='auth-input' name="text" as="textarea" style={{height: '200px'}} />
+              <ErrorMessage className='auth-input__error'  name="text" component="div" />
+              {error && <span className='auth-error'>{status}</span>}
+              <Button type="submit" className='mt-3'>Post</Button>
+            </Form>
+          )}
+        </Formik>
       </div>
     </MainLayout>
   );

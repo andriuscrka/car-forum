@@ -14,8 +14,7 @@ const Profile = () => {
   const {dispatch, authState,  user} = useAppContext();
   const {userId} = useParams();
   
-  const {_id, name} = user;
-
+  const {_id, name} = user || {};
   const {status, error} = authState;
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 export const PORT = 3000;
-export const HOST = `http://localhost:${PORT}`;
+export const HOST = 'https://car-forum-9mj2.onrender.com';
 
 const Routes = {
   User: `${HOST}/api/users`,

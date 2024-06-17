@@ -19,7 +19,7 @@ module.exports = (envVars) => {
   const cspConfig = {
     'object-src': '\'none\'',
     'base-uri': '\'self\'',
-    'default-src': '\'self\' \'unsafe-inline\'',
+    'default-src': `'self' 'unsafe-inline' ${SERVER_URL}`,
     'script-src': `'self' 'unsafe-inline' 'nonce-${nonce}'`,
     'style-src': '\'self\' \'unsafe-inline\'',
     'img-src': '\'self\'',

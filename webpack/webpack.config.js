@@ -5,6 +5,8 @@ const crypto = require('crypto');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 
+const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
+
 function generateNonce() {
   return crypto.randomBytes(16).toString('base64');
 }
@@ -21,7 +23,7 @@ module.exports = (envVars) => {
     'script-src': `'self' 'unsafe-inline' 'nonce-${nonce}'`,
     'style-src': '\'self\' \'unsafe-inline\'',
     'img-src': '\'self\'',
-    'connect-src': '\'self\' http://localhost:3000',
+    'connect-src': `'self' ${SERVER_URL}`
   };
 
   commonConfig.plugins.push(

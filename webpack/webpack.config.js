@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
+const SERVER_URL = process.env.SERVER_URL || 'https://car-forum-9mj2.onrender.com';
 
 function generateNonce() {
   return crypto.randomBytes(16).toString('base64');

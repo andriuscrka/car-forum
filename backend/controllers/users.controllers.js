@@ -2,13 +2,14 @@ const mongoose = require('mongoose');
 
 const Users = require('../models/users.model');
 const Profiles = require('../models/profiles.model');
+const Bcrypt = require('bcryptjs');
 
 exports.login = async (req, res) => {
   try {
     const {username, password} = req.body;
     const user = await Users.findOne({username});
 
-    if(!user || user.password !== password) {
+    if(!user || !await Bcrypt.compare(password, user.password)) {
       return res.status(404).json({success: false, message: 'Username or password is incorrect'});
     }
     
@@ -27,7 +28,10 @@ exports.register = async (req, res) => {
 
     const user = req.body;
 
-    const account = {username: user.username, password: user.password, email: user.email, name: user.name};
+    const salt = await Bcrypt.genSalt(10);
+    const hashedPassword = await Bcrypt.hash(user.password, salt);
+
+    const account = {username: user.username, password: hashedPassword, email: user.email, name: user.name};
     const createAccount =  await Users.create([account], { session: session });
 
     const profile = {user_id: createAccount[0]._id.toString(), username: user.username, name: user.name, birthday: user.birthday};
@@ -66,9 +70,13 @@ exports.register = async (req, res) => {
 exports.updatePassword = async (req, res) => {
   try {
     const { password } = req.body;
+
+    const salt = await Bcrypt.genSalt(10);
+    const hashedPassword = await Bcrypt.hash(password, salt);
+
     const user = await Users.findByIdAndUpdate(
       req.params.userId,
-      { password },
+      { password: hashedPassword },
       { new: true, runValidators: true }
     );
 
